@@ -121,6 +121,9 @@ La automatización de procesos de estimación nos brinda la capacidad de generar
 
 - Brasil: <https://youtu.be/jdPlycmDJy4>
 
+<https://github.com/stalynGuerrero/PresentacionBRA/blob/main/20230119_133530.mp4>
+
+
 
 ## Contribución a los Objetivos de Desarrollo Sostenible
 
