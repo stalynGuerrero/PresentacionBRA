@@ -1,7 +1,5 @@
 
-```{r, echo=FALSE, warning=FALSE,message=FALSE}
-library(ggdag) # drawing DAG
-```
+
 
 
 ## ¡Descubre la Automatización de Procesos!
