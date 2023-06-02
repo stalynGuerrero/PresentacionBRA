@@ -15,7 +15,8 @@ estimación-del-modelo-y-validaciones
 obtención-de-estimaciones-agregadas
 documentación-del-proceso
 workflow-modelo-de-unidad
-ejemplo
+ejemplo-1
+ejemplo-2
 contribución-a-los-objetivos-de-desarrollo-sostenible
 implementación-exitosa-en-américa-latina
 beneficios-de-la-automatización

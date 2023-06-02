@@ -32,3 +32,13 @@ output:
 
 
 # Introducción 
+
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+
+<div class="justify">
+La automatización del proceso de estimación es una práctica que ofrece múltiples ventajas, desde una mayor velocidad y precisión en la estimación hasta una optimización de recursos y una mejora en la toma de decisiones. Es una herramienta poderosa que impulsa la eficiencia y la productividad en los entornos empresariales actuales.
+</div>
