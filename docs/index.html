@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Stalyn Guerrero" />
+
+<meta name="date" content="2023-06-03" />
+
+<title>Automatización del Proceso de Estimación</title>
+
+<script src="site_libs/header-attrs-2.22/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="index_custom.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Automatización del Proceso de Estimación</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Automatización del Proceso de
+Estimación</h1>
+<h4 class="author">Stalyn Guerrero<a href="#fn1" class="footnote-ref"
+id="fnref1"><sup>1</sup></a></h4>
+<h4 class="date">2023-06-03</h4>
+
+</div>
+
+
+<div id="introducción" class="section level1 unnumbered">
+<h1 class="unnumbered">Introducción</h1>
+<p>La automatización del proceso de estimación es una práctica que
+ofrece múltiples ventajas, desde una mayor velocidad y precisión en la
+estimación hasta una optimización de recursos y una mejora en la toma de
+decisiones. Es una herramienta poderosa que impulsa la eficiencia y la
+productividad en los entornos empresariales actuales.</p>
+<div id="descubre-la-automatización-de-procesos"
+class="section level2 unnumbered">
+<h2 class="unnumbered">¡Descubre la Automatización de Procesos!</h2>
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+<p><strong>¿Alguna sean han encontrado realizando una tarea repetitiva
+una y otra vez?</strong></p>
+<center>
+<img src="repetitivos2.jpg" style="width:60.0%" />
+</center>
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+<div class="justify">
+<p>Bueno, permíteme contarles cómo me liberé de esas tareas tediosas. La
+automatización de procesos nos permite realizar actividades de forma
+automática, reduciendo al mínimo nuestra intervención.</p>
+</div>
+</div>
+<div id="resolver." class="section level2 unnumbered">
+<h2 class="unnumbered">Resolver.</h2>
+<p>Suponga la siguiente ecuación: <span class="math inline">\(3x + 2 =
+8\)</span>. y quieres despejar la incógnita <span
+class="math inline">\(x\)</span> para encontrar su valor.</p>
+<ol style="list-style-type: decimal">
+<li><p>Paso 1: <strong>Si una cantidad está sumando, pasa
+restando</strong>. <span class="math display">\[3x = 8 - 2\]</span> Esto
+simplifica la ecuación a: <span class="math inline">\(3x =
+6\)</span>.</p></li>
+<li><p>Paso 2: <strong>Si una cantidad está multiplicando, pasa
+dividiendo</strong>. <span class="math display">\[x = \frac{6}{3}
+\]</span> Esto nos da: <span class="math inline">\(x =
+2\)</span>.</p></li>
+</ol>
+<p>Imaginen despejar realizar este proceso una y otra vez, ¡pero ahora
+con la ayuda de la automatización!</p>
+<center>
+<img src="resolver_idea.jpg" style="width:15.0%" />
+</center>
+</div>
+<div id="acciones-que-realizas-de-forma-mecánica"
+class="section level2 unnumbered">
+<h2 class="unnumbered">Acciones que realizas de forma mecánica</h2>
+<ol style="list-style-type: decimal">
+<li><p>Tomarse un café.</p></li>
+<li><p>Conducir un automóvil.</p></li>
+<li><p>Escribir en un teclado.</p></li>
+<li><p>Resolver sistema de ecuaciones lineales.</p></li>
+<li><p>Realizar análisis estadístico.</p></li>
+<li><p>Calcular integrales definidas.</p></li>
+</ol>
+</div>
+<div id="diagrama-de-flujo." class="section level2 unnumbered">
+<h2 class="unnumbered">Diagrama de flujo.</h2>
+<center>
+<div class="float">
+<img src="diagrama_cafe.jpg" style="width:80.0%"
+alt="Vamos por un café" />
+<div class="figcaption">Vamos por un café</div>
+</div>
+</center>
+</div>
+<div id="eficiencia-y-creatividad-van-de-la-mano"
+class="section level2 unnumbered">
+<h2 class="unnumbered">Eficiencia y creatividad van de la mano</h2>
+<center>
+<img src="eficiencia_creatividad.jpg" style="width:40.0%" />
+</center>
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+<div class="justify">
+<p>La automatización nos brinda la oportunidad de liberarnos de los
+procesos repetitivos y mecánicos, permitiéndonos enfocarnos en
+actividades más creativas y estratégicas. En lugar de perder tiempo en
+tareas que pueden ser realizadas de manera automática, podemos emplear
+nuestra energía y talento en áreas que requieren nuestra atención y
+creatividad.</p>
+</div>
+<p><strong>¡La automatización es como tener un compañero de trabajo
+virtual que se encarga de las tareas aburridas mientras nosotros
+desplegamos nuestra imaginación!</strong></p>
+</div>
+<div id="importancia-de-los-indicadores-socioeconómicos"
+class="section level2 unnumbered">
+<h2 class="unnumbered">Importancia de los indicadores
+socioeconómicos</h2>
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+<div class="justify">
+<p>Los indicadores socioeconómicos desempeñan un papel crucial en la
+formulación de políticas y en la evaluación del impacto de las
+intervenciones. Proporcionan información clave sobre la situación
+económica y social de un país, así como sobre la efectividad de las
+políticas implementadas.</p>
+</div>
+<center>
+<img src="indicadores_socioeconomicos.jpg" style="width:40.0%" />
+</center>
+</div>
+<div id="relevancia-de-los-objetivos-de-desarrollo-sostenible-ods"
+class="section level2 unnumbered">
+<h2 class="unnumbered">Relevancia de los Objetivos de Desarrollo
+Sostenible (ODS)</h2>
+<center>
+<img src="ods.jpg" style="width:50.0%" />
+</center>
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+<div class="justify">
+<p>Los ODS establecidos por las Naciones Unidas son una guía global para
+promover un desarrollo sostenible en todas sus dimensiones. Para
+monitorear el progreso hacia estos objetivos, es crucial contar con
+información actualizada, precisa y desagregada a nivel geográfico y
+demográfico.</p>
+</div>
+</div>
+<div id="automatización-de-procesos-de-estimación"
+class="section level2 unnumbered">
+<h2 class="unnumbered">Automatización de procesos de estimación</h2>
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+<div class="justify">
+<p>La automatización de procesos de estimación nos brinda la capacidad
+de generar indicadores socioeconómicos de manera eficiente, permitiendo
+un seguimiento más efectivo de los ODS y una toma de decisiones
+informada. Además, nos permite utilizar métodos de estimación de áreas
+pequeñas, lo que nos brinda información desagregada y focalizada para
+comprender las necesidades específicas de diferentes regiones y
+poblaciones.</p>
+</div>
+</div>
+<div id="pasos-para-lograr-la-automatización-del-proceso."
+class="section level2 unnumbered">
+<h2 class="unnumbered">Pasos para lograr la automatización del
+proceso.</h2>
+<div id="obtención-de-información-auxiliar"
+class="section level3 unnumbered">
+<h3 class="unnumbered">Obtención de Información Auxiliar</h3>
+<ul>
+<li><p>Los Censos nacional.</p></li>
+<li><p>Datos satelitales disponibles en la nube.</p></li>
+<li><p>Registros administrativos.</p></li>
+</ul>
+</div>
+<div id="armonización-de-las-bases-de-datos"
+class="section level3 unnumbered">
+<h3 class="unnumbered">Armonización de las Bases de Datos</h3>
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+<div class="justify">
+<ul>
+<li><p>Identificación y unificación de variables comunes entre el censo
+y las encuestas de hogares para garantizar la compatibilidad y
+consistencia de los datos.</p></li>
+<li><p>Aplicación de técnicas de validación y limpieza de datos para
+asegurar la integridad de la información utilizada.</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="pasos-para-lograr-la-automatización-del-proceso.-1"
+class="section level2 unnumbered">
+<h2 class="unnumbered">Pasos para lograr la automatización del
+proceso.</h2>
+<div id="estimación-del-modelo-y-validaciones"
+class="section level3 unnumbered">
+<h3 class="unnumbered">Estimación del Modelo y Validaciones</h3>
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+<div class="justify">
+<ul>
+<li><p>Implementación de los modelos de área o unidad para estimar los
+indicadores socioeconómicos.</p></li>
+<li><p>Realización de validaciones y pruebas estadísticas para evaluar
+la calidad y el poder predictivo del modelo.</p></li>
+</ul>
+</div>
+</div>
+<div id="obtención-de-estimaciones-agregadas"
+class="section level3 unnumbered">
+<h3 class="unnumbered">Obtención de Estimaciones Agregadas</h3>
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+<div class="justify">
+<ul>
+<li>Agregación de los resultados a niveles geográficos y demográficos
+relevantes, permitiendo una visión detallada y desagregada de los
+indicadores socioeconómicos.</li>
+<li>Aplicación de técnicas de benchmarking para ajustar las estimaciones
+y mejorar su precisión.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="documentación-del-proceso" class="section level2 unnumbered">
+<h2 class="unnumbered">Documentación del Proceso</h2>
+<center>
+<img src="documentacion.jpg" style="width:20.0%" />
+</center>
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+<div class="justify">
+<ul>
+<li>Generación automática de informes y documentos que documentan el
+proceso de estimación, incluyendo las metodologías utilizadas y los
+resultados obtenidos.</li>
+<li>Acceso a un archivo HTML que resume y presenta de manera clara toda
+la información relevante del proceso de estimación.</li>
+</ul>
+</div>
+</div>
+<div id="workflow-modelo-de-unidad" class="section level2 unnumbered">
+<h2 class="unnumbered">Workflow Modelo de unidad</h2>
+<center>
+<div class="float">
+<img src="Workflow%20Modelo%20de%20unidad_page-0001.jpg"
+style="width:250.0%" alt="Modelo de unidad" />
+<div class="figcaption">Modelo de unidad</div>
+</div>
+</center>
+</div>
+<div id="ejemplo-argentina" class="section level2 unnumbered">
+<h2 class="unnumbered">Ejemplo Argentina:</h2>
+<ul>
+<li>Link: <a href="https://youtu.be/f091KLQAwDk"
+class="uri">https://youtu.be/f091KLQAwDk</a></li>
+</ul>
+<center>
+<iframe width="800" height="600" src="https://www.youtube.com/embed/f091KLQAwDk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+</iframe>
+</center>
+</div>
+<div id="ejemplo-brasil" class="section level2 unnumbered">
+<h2 class="unnumbered">Ejemplo Brasil:</h2>
+<ul>
+<li>Link: <a href="https://youtu.be/jdPlycmDJy4"
+class="uri">https://youtu.be/jdPlycmDJy4</a></li>
+</ul>
+<center>
+<iframe width="800" height="600" src="https://www.youtube.com/embed/jdPlycmDJy4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+</iframe>
+</center>
+</div>
+<div id="contribución-a-los-objetivos-de-desarrollo-sostenible"
+class="section level2 unnumbered">
+<h2 class="unnumbered">Contribución a los Objetivos de Desarrollo
+Sostenible</h2>
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+<div class="justify">
+<ul>
+<li>Desagregación de los indicadores socioeconómicos para identificar
+desafíos específicos en cada área geográfica y poblacional.</li>
+</ul>
+<center>
+<img src="contribucion.jpg" style="width:20.0%" />
+</center>
+<ul>
+<li>Seguimiento preciso y oportuno de los ODS a nivel local y nacional,
+facilitando la toma de decisiones informadas y la evaluación del
+progreso.</li>
+</ul>
+</div>
+</div>
+<div id="implementación-exitosa-en-américa-latina"
+class="section level2 unnumbered">
+<h2 class="unnumbered">Implementación exitosa en América Latina</h2>
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+<div class="justify">
+<ul>
+<li>Aplicación del proceso de automatización en los 17 países de América
+Latina, utilizando las últimas encuestas de hogares disponibles.</li>
+<li>Logro de una estimación eficiente y precisa de indicadores clave,
+como la pobreza, la pobreza extrema y el ingreso medio.</li>
+</ul>
+</div>
+</div>
+<div id="beneficios-de-la-automatización"
+class="section level2 unnumbered">
+<h2 class="unnumbered">Beneficios de la Automatización</h2>
+<center>
+<img src="beneficios.jpg" style="width:20.0%" />
+</center>
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+<div class="justify">
+<ul>
+<li><p>Mejora en la eficiencia y la productividad al reducir la
+dependencia de procesos manuales y repetitivos.</p></li>
+<li><p>Minimización de errores humanos y mayor consistencia en los
+resultados, aumentando la confiabilidad de la información
+generada.</p></li>
+</ul>
+</div>
+</div>
+<div id="calidad-de-los-resultados" class="section level2 unnumbered">
+<h2 class="unnumbered">Calidad de los Resultados</h2>
+<center>
+<img src="resultados.jpg" style="width:20.0%" />
+</center>
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+<div class="justify">
+<ul>
+<li>Obtención de estimaciones socioeconómicas más precisas y
+actualizadas, brindando una visión más precisa de la realidad de cada
+área geográfica.</li>
+<li>Disponibilidad de información confiable y consistente para la toma
+de decisiones y la formulación de políticas efectivas.</li>
+</ul>
+</div>
+</div>
+<div id="desagregación-de-indicadores"
+class="section level2 unnumbered">
+<h2 class="unnumbered">Desagregación de Indicadores</h2>
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+<div class="justify">
+<ul>
+<li>Importancia de desagregar los indicadores socioeconómicos para
+comprender mejor las desigualdades y los retos específicos que enfrentan
+diferentes grupos de población.</li>
+<li>Uso de niveles de desagregación como área-geográfica-edad,
+área-geográfica-género, entre otros, para un análisis más completo.</li>
+</ul>
+</div>
+</div>
+<div id="contribución-a-los-ods" class="section level2 unnumbered">
+<h2 class="unnumbered">Contribución a los ODS</h2>
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+<div class="justify">
+<ul>
+<li>Utilización de las estimaciones de indicadores socioeconómicos para
+evaluar el progreso hacia los ODS.</li>
+<li>Identificación de áreas y grupos poblacionales que requieren
+atención específica para lograr un desarrollo sostenible y
+equitativo.</li>
+</ul>
+</div>
+</div>
+<div id="oportunidades-de-implementación"
+class="section level2 unnumbered">
+<h2 class="unnumbered">Oportunidades de Implementación</h2>
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+<div class="justify">
+<ul>
+<li>Potencial de replicar el proceso de automatización en otros países y
+regiones, aprovechando las lecciones aprendidas y adaptándolas a
+contextos particulares.</li>
+<li>Establecimiento de un sistema de información robusto y actualizado
+que permita monitorear y evaluar continuamente el progreso hacia los
+ODS.</li>
+</ul>
+</div>
+</div>
+<div id="conclusiones" class="section level2 unnumbered">
+<h2 class="unnumbered">Conclusiones</h2>
+<style>
+.justify {
+  text-align: justify;
+}
+</style>
+<div class="justify">
+<ul>
+<li>La automatización del proceso de estimación de indicadores
+socioeconómicos ofrece beneficios significativos en términos de
+eficiencia, precisión y calidad de los resultados.</li>
+<li>Contribución clave para el seguimiento de los ODS y el impulso hacia
+un desarrollo sostenible y equitativo.</li>
+</ul>
+</div>
+<center>
+<img src="conclusion.jpg" style="width:20.0%" />
+</center>
+<p>¡Gracias!</p>
+</div>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>Consultor - Comisión Económica para América Latina y el
+Caribe (CEPAL), <a href="mailto:guerrerostalyn@gmail.com"
+class="email">guerrerostalyn@gmail.com</a><a href="#fnref1"
+class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
